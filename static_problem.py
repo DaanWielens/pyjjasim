@@ -218,9 +218,9 @@ class ParameterOptimizeInfo:
         self.lambda_history = np.zeros(self.maxiter, dtype=np.double)
         self.solutions = []
         self.stepsize_history = np.zeros(self.maxiter, dtype=np.double)
-        self.solution_history = np.zeros(self.maxiter, dtype=np.bool)
-        self.stable_history = np.zeros(self.maxiter, dtype=np.int)
-        self.target_n_history = np.zeros(self.maxiter, dtype=np.int)
+        self.solution_history = np.zeros(self.maxiter, dtype=np.bool_)
+        self.stable_history = np.zeros(self.maxiter, dtype=np.int32)
+        self.target_n_history = np.zeros(self.maxiter, dtype=np.int32)
         self.newton_iter_infos = []
         self._step = 0
         self._time = time.perf_counter()
