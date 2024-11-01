@@ -320,7 +320,7 @@ class Circuit:
         nodes_to_remove = np.array(nodes_to_remove).flatten()
         if not len(nodes_to_remove) == self.node_count():
             nodes_to_remove = np.array(nodes_to_remove, dtype=int)
-        if not isinstance(nodes_to_remove.dtype, (bool, np.bool)):
+        if not isinstance(nodes_to_remove.dtype, (bool, bool)):
             try:
                 node_remove_mask = np.zeros(self.node_count(), dtype=bool)
                 node_remove_mask[nodes_to_remove] = True
