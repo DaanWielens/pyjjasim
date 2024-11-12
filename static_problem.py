@@ -1,3 +1,12 @@
+'''
+This version has been edited by Daan Wielens, 2024-11-12, mod ver. 1.0
+- In compute_stable_region, an additional parameter "enforce_f_mid" is added.
+  If selected, the compute code will start scanning from a different f value and 
+  will skip the initial 'compute_external_flux_bounds' which normally quickly scans
+  what range should be suitable. 
+
+'''
+
 from __future__ import annotations
 
 import time
@@ -218,9 +227,9 @@ class ParameterOptimizeInfo:
         self.lambda_history = np.zeros(self.maxiter, dtype=np.double)
         self.solutions = []
         self.stepsize_history = np.zeros(self.maxiter, dtype=np.double)
-        self.solution_history = np.zeros(self.maxiter, dtype=np.bool_)
-        self.stable_history = np.zeros(self.maxiter, dtype=np.int32)
-        self.target_n_history = np.zeros(self.maxiter, dtype=np.int32)
+        self.solution_history = np.zeros(self.maxiter, dtype=bool)
+        self.stable_history = np.zeros(self.maxiter, dtype=int)
+        self.target_n_history = np.zeros(self.maxiter, dtype=int)
         self.newton_iter_infos = []
         self._step = 0
         self._time = time.perf_counter()
@@ -705,7 +714,7 @@ class StaticProblem:
         max_current_factor, upper_bound, out_config, info = out
         return max_current_factor, out_config, info
 
-    def compute_stable_region(self, angles=np.linspace(0, 2*np.pi, 61), f_middle_of_range_guess=None,
+    def compute_stable_region(self, angles=np.linspace(0, 2*np.pi, 61), f_middle_of_range_guess=None, enforce_f_mid = False,
                               start_initial_guess=None, lambda_tol=DEF_MAX_PAR_TOL,
                               maxiter=DEF_MAX_PAR_MAXITER, require_stability=True,
                               require_vortex_configuration_equals_target=True,
@@ -756,6 +765,9 @@ class StaticProblem:
             return None, None, None, None
         dome_center_x = 0.5 * (smallest_x + largest_x)
         dome_center_f = dome_center_x * self._f()
+        if enforce_f_mid:
+            dome_center_x = f_middle_of_range_guess
+            dome_center_f = f_middle_of_range_guess * self._f()
         dome_center_problem = self.new_problem(external_flux=dome_center_f)
         out = dome_center_problem.compute_maximal_current(initial_guess=start_initial_guess, **options)
         max_current_factor, _, info = out
